@@ -9,7 +9,10 @@ caption = st.text_input('Enter the caption for your post')
 
 # Login to Instagram
 cl = Client()
-cl.login(username, password)
+
+if st.button('Login'):
+    cl.login(username, password)
+    st.success('Logged in successfully!')
 
 # Upload photo
 if st.button('Schedule Post'):
