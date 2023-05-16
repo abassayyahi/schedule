@@ -1,29 +1,19 @@
-import streamlit as st
 from instagrapi import Client
-from PIL import Image
-import tempfile
+import streamlit as st
 
-# Get user input
-username = st.text_input('Enter your Instagram username')
-password = st.text_input('Enter your Instagram password', type='password')
-caption = st.text_input('Enter the caption for your post')
+st.title("Post Instagram Photos")
 
-# Login to Instagram
-cl = Client()
+username = st.text_input("Enter your Instagram username")
+password = st.text_input("Enter your Instagram password", type="password")
+image_path = st.file_uploader("Upload an image for your post", type=["jpg", "jpeg", "png"])
+caption = st.text_input("Enter the caption for your post")
 
-if st.button('Login'):
-    cl.login(username, password)
-    st.success('Logged in successfully!')
-
-# Upload photo
-uploaded_file = st.file_uploader('Choose an image to upload', type=['jpg', 'jpeg', 'png'])
-
-if uploaded_file is not None:
-    # Create a temporary file to save the uploaded image
-    with tempfile.NamedTemporaryFile(delete=False) as fp:
-        fp.write(uploaded_file.getvalue())
-        image_path = fp.name
-
-    if st.button('Schedule Post'):
-        cl.photo_upload(image_path, caption)
-        st.success('Post scheduled successfully!')
+if st.button("Post Photo"):
+    api = Client()
+    api.login(username, password)
+    image_file = "uploaded_image.jpg" # choose a name for the permanent file
+    with open(image_file, "wb") as f: # open a file with write and binary mode
+        f.write(image_path.getvalue()) # write the content of the uploaded file to the permanent file
+    api.photo_upload(image_file, caption=caption) # upload the permanent file using its name
+    # api.photo_publish(media_id) # publish photo immediately
+    st.success("Post published successfully!")
