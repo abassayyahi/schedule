@@ -1,10 +1,11 @@
 import streamlit as st
 from instagrapi import Client
+from PIL import Image
+import tempfile
 
 # Get user input
 username = st.text_input('Enter your Instagram username')
 password = st.text_input('Enter your Instagram password', type='password')
-image_path = st.text_input('Enter the path to the image you want to upload')
 caption = st.text_input('Enter the caption for your post')
 
 # Login to Instagram
@@ -15,6 +16,14 @@ if st.button('Login'):
     st.success('Logged in successfully!')
 
 # Upload photo
-if st.button('Schedule Post'):
-    cl.photo_upload(image_path, caption)
-    st.success('Post scheduled successfully!')
+uploaded_file = st.file_uploader('Choose an image to upload', type=['jpg', 'jpeg', 'png'])
+
+if uploaded_file is not None:
+    # Create a temporary file to save the uploaded image
+    with tempfile.NamedTemporaryFile(delete=False) as fp:
+        fp.write(uploaded_file.getvalue())
+        image_path = fp.name
+
+    if st.button('Schedule Post'):
+        cl.photo_upload(image_path, caption)
+        st.success('Post scheduled successfully!')
